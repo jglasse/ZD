@@ -127,6 +127,10 @@ class HumonShip: SectorObject {
         let droneShape = SCNBox(width: 10, height: 5, length: 5, chamferRadius: 0)
         let dronePhysicsShape = SCNPhysicsShape(geometry: droneShape, options: nil)
         self.addChildNode(humonShip!)
+        if shipType == .destroyer, let ballRot = humonShip?.childNode(withName: "BallRot", recursively: true) {
+            let spin = SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 0, z: CGFloat.pi * 2, duration: 2.0))
+            ballRot.runAction(spin)
+        }
         self.physicsBody = SCNPhysicsBody(type: .kinematic, shape: dronePhysicsShape)
         self.physicsBody?.isAffectedByGravity = false
         self.physicsBody?.friction = 0

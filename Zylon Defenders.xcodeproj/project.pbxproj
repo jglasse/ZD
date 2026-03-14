@@ -48,6 +48,9 @@
 		6B72B76522F6259400564D52 /* TelemetryPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAF88C222E59DCD0022400E /* TelemetryPlayer.swift */; };
 		6B72B76622F6259400564D52 /* AVTonePlayerUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B600D6522D2A87E003D3504 /* AVTonePlayerUnit.swift */; };
 		6B8E68EB22DBC081000D3DFF /* FadeToBlackSegue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8E68EA22DBC081000D3DFF /* FadeToBlackSegue.swift */; };
+		6B95024A2F5DEC960035D3EA /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6B9502492F5DEC960035D3EA /* AppIcon.icon */; };
+		6B95024B2F5DEC960035D3EA /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 6B9502492F5DEC960035D3EA /* AppIcon.icon */; };
+		6BA8DB442F5E51BA00D1E2BA /* HumonHunter 2.scn in Resources */ = {isa = PBXBuildFile; fileRef = 6BA8DB432F5E51BA00D1E2BA /* HumonHunter 2.scn */; };
 		6BAF88C322E59DCD0022400E /* TelemetryPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAF88C222E59DCD0022400E /* TelemetryPlayer.swift */; };
 		6BB6C38222B1B25C002F59D1 /* galacticMap.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6BB6C38122B1B25C002F59D1 /* galacticMap.m4a */; };
 		6BB6C38322B1B25C002F59D1 /* galacticMap.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6BB6C38122B1B25C002F59D1 /* galacticMap.m4a */; };
@@ -246,6 +249,8 @@
 		6B6C2674231655E500F51088 /* Atari 1_Atari 1_Metallic.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Atari 1_Atari 1_Metallic.png"; sourceTree = "<group>"; };
 		6B6C2675231655E600F51088 /* Atari 1_Atari 1_AO.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Atari 1_Atari 1_AO.png"; sourceTree = "<group>"; };
 		6B8E68EA22DBC081000D3DFF /* FadeToBlackSegue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeToBlackSegue.swift; sourceTree = "<group>"; };
+		6B9502492F5DEC960035D3EA /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
+		6BA8DB432F5E51BA00D1E2BA /* HumonHunter 2.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = "HumonHunter 2.scn"; sourceTree = "<group>"; };
 		6BAF88C222E59DCD0022400E /* TelemetryPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelemetryPlayer.swift; sourceTree = "<group>"; };
 		6BB6C38122B1B25C002F59D1 /* galacticMap.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = galacticMap.m4a; sourceTree = "<group>"; };
 		6BBF5A47229E40990080A195 /* GalaxyBlip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalaxyBlip.swift; sourceTree = "<group>"; };
@@ -585,6 +590,7 @@
 				E1B12C2C2027D4150071F9A1 /* PNG */,
 				FC9F9CF41E1AFC9A00907E04 /* sounds */,
 				E1D8BD531DCFCD1A00C863DF /* art.scnassets */,
+				6B9502492F5DEC960035D3EA /* AppIcon.icon */,
 			);
 			name = assets;
 			path = zylons;
@@ -595,6 +601,7 @@
 			children = (
 				E1272AB51F64EE4800A66358 /* HumonScout.scn */,
 				6B6C26592316540D00F51088 /* HumonHunter.scn */,
+				6BA8DB432F5E51BA00D1E2BA /* HumonHunter 2.scn */,
 				6B6C265D2316544500F51088 /* BaseStarTextures */,
 				6B6C266E231655B400F51088 /* HUMON Textures */,
 				E1A5A7832283FC7700EC5A71 /* MS5_Diffuse1.jpg */,
@@ -869,6 +876,7 @@
 				E16E28C820564A41002362C1 /* innerHullFailure.aiff in Resources */,
 				E192623720A79E4600AB93F2 /* Starfield 2048x1024LB.png in Resources */,
 				E16C7EB4228BCF9400117E92 /* zylonStation.scn in Resources */,
+				6B95024A2F5DEC960035D3EA /* AppIcon.icon in Resources */,
 				E16D68CB226B50F100B27067 /* alert.m4a in Resources */,
 				E16E28CA20564A41002362C1 /* warpStartStop.aif in Resources */,
 				E18370B9212F609F003E2308 /* enemyAlert.mp3 in Resources */,
@@ -963,8 +971,10 @@
 				6B6C2677231655E600F51088 /* Atari 1_Atari 1_Normal.png in Resources */,
 				6B356FBA22FCC60A00869FAA /* alphaStationDestroyed.m4a in Resources */,
 				E17282A51EBEA144003C1955 /* grid.png in Resources */,
+				6B95024B2F5DEC960035D3EA /* AppIcon.icon in Resources */,
 				E1A5A7902283FC7800EC5A71 /* MS5_Metal.jpg in Resources */,
 				E13A032821B37B1D0049B125 /* alpha.m4a in Resources */,
+				6BA8DB442F5E51BA00D1E2BA /* HumonHunter 2.scn in Resources */,
 				E1284C4D203914080022AE83 /* explosion2.m4a in Resources */,
 				6B356FBC22FCC60A00869FAA /* deltaStationDestroyed.m4a in Resources */,
 				6B356FB922FCC60300869FAA /* badIdea.m4a in Resources */,
@@ -1277,7 +1287,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = zylons/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1303,7 +1313,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = zylons/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
