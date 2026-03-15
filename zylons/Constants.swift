@@ -11,6 +11,7 @@ import SceneKit
 
 let numberstrings = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
+
 struct Constants {
     static let fadedMapTransparency: CGFloat = 0.03
     static let starMoveDivider: Float = 0.4

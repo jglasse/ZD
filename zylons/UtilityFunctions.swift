@@ -345,9 +345,9 @@ extension ZylonGameViewController: CommandDelegate {
         soundURL = Bundle.main.url(forResource: "ship_hum", withExtension: "mp3")
         do {
             try engineSound = AVAudioPlayer(contentsOf: soundURL!)
-        engineSound.numberOfLoops = -1
         engineSound.volume = volume
         engineSound.play()
+        engineSound.numberOfLoops = -1
         } catch { print("engineSound fail") }
     }
 

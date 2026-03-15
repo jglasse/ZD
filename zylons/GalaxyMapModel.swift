@@ -54,8 +54,11 @@ struct GalaxyMapModel {
         // based on difficulty level, set internal variables
         switch difficulty {
         case 1:
-            numberofOccupiedSectors = 12
-            maxShipsPerSector = 3
+//            numberofOccupiedSectors = 12
+//            maxShipsPerSector = 3
+//            numberofStations = 4
+            numberofOccupiedSectors = 3
+            maxShipsPerSector = 1
             numberofStations = 4
 
         case 2:

@@ -16,6 +16,7 @@ import GameController
 // import CoreMotion
 
 class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNSceneRendererDelegate {
+    
     let rankArray = ["ZYLON HERO", "SPACE ACE", "WARRIOR", "CAPTAIN", "STAR COMMANDER", "COMMANDER", "LIEUTENANT", "PILOT", "ENSIGN", "NOVICE", "ROOKIE", "GARBAGE SCOW CAPTAIN", "GALACTIC COOK"]
 
     //  Multipeer
@@ -733,7 +734,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         var soundURL: URL?
         currentPhoton = 0
         soundURL = Bundle.main.url(forResource: "photon_sound", withExtension: "m4a")
-        do { try photonSound1 = AVAudioPlayer(contentsOf: soundURL!)} catch { devLog("photon player 1 ailed")}
+        do { try photonSound1 = AVAudioPlayer(contentsOf: soundURL!)} catch { devLog("photon player 1 failed")}
         do { try photonSound2 = AVAudioPlayer(contentsOf: soundURL!)} catch { devLog("photon player 2 failed")}
         do { try photonSound3 = AVAudioPlayer(contentsOf: soundURL!)} catch { devLog("photon player 3 failed")}
         do { try photonSound4 = AVAudioPlayer(contentsOf: soundURL!)} catch { devLog("photon player 4 failed")}
@@ -856,17 +857,16 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         if gesture.state == .ended {
         let location = gesture.location(in: mapScnView)
         let hitresults = mapScnView.hitTest(location, options: nil)
-            devLog("hitResults:\(hitresults)")
+           // devLog("hitResults:\(hitresults)")
         if !hitresults.isEmpty {
-            var tappedNode: SCNNode?
+ //           var tappedNode: SCNNode?
             // test if it's a grid element
-
             for result in hitresults {
             for x in 0...127 {
                 let sectorString = "\(x)"
                 if result.node.name == sectorString {
-                    tappedNode =  hitresults.first?.node
-                    devLog("tapped Node:\(String(describing: tappedNode?.name))")
+             //       tappedNode =  hitresults.first?.node
+                   // devLog("tapped Node:\(String(describing: tappedNode?.name))")
                     // print("galaxyModel.map[\(x)].sectorType:", galaxyModel.map[x].sectorType)
                     if galaxyModel.map[x].sectorType != .empty {
                     galacticDisplay.setNewTargetGrid(number: x, color: UIColor.red)
@@ -937,7 +937,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     }
 
     func zylonShipHitBy(node: SCNNode) {
-        devLog("Zylon Ship hit by \(node.description)")
+      //  devLog("Zylon Ship hit by \(node.description)")
 
         // we should animate removal of node which hit ship, but for now just remove it.
         // if no shields, special explosion for zylonShipHit
@@ -1064,30 +1064,38 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     }
 
     func justWin(atNode: SCNNode, cause: String) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-            self.gameOver = true
-        })
+        devLog("justWin!")
+        gameOver = true
+        removeMarkedSectorObjects()
+        zylonScanner.isHidden = true
+        zylonScanner.scanBeam.removeAllActions()
+        viewMode = .foreView
+        Vibration.oldSchool.vibrate()
+        finalExplosionSound()
         shipHud.finalFlash()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-
             self.endGame(cause)
         }
 
     }
 
     func checkForGameEnd() {
-        let stationGrids = galaxyModel.map.filter {$0.sectorType == .starbase}
-        let enemyGrids = galaxyModel.map.filter {$0.sectorType == .enemy }
+        if !gameOver {
+            let stationGrids = galaxyModel.map.filter {$0.sectorType == .starbase}
+        //  let enemyGrids = galaxyModel.map.filter {$0.sectorType == .enemy }
         if stationGrids.count == 0 {
             boomAndLose(atNode: ship, cause: "All is lost. Zylon outposts destroyed by Humon invaders")
         }
-
-        if enemyGrids.count == 0 {
+        
+        if galaxyModel.currentNumberOfOccupiedSectors == 0 && !gameOver {
+            //  endGame("Victory is ours. The Humons have been vanquished")
             justWin(atNode: ship, cause: "Victory is ours. The Humons have been vanquished")
         }
+    }
         }
 
     func endGame(_ cause: String) {
+        print("endGame")
         engineSound.stop()
         removeAllTorps()
         self.telemetryView.setupTelemetryAudioPlayer()
@@ -1100,6 +1108,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
             devLog("occupiedSectorRatio: \(self.galaxyModel.occupiedSectorRatio)")
             devLog("rankIndex: \(rankIndex)")
+            if rankIndex > 12 { rankIndex = 12 }
             let rank: String =  self.rankArray[rankIndex]
             let message = """
             Zylon Command to all sectors. \(cause)
