@@ -11,9 +11,7 @@ import UIKit
 import SceneKit
 import SpriteKit
 import AVFoundation
-// import MultipeerConnectivity
 import GameController
-// import CoreMotion
 
 class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNSceneRendererDelegate {
     
@@ -1048,6 +1046,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     func boomAndLose(atNode: SCNNode, cause: String) {
         devLog("boomAndLose")
+        devLog(cause)
         removeMarkedSectorObjects()
         zylonScanner.isHidden = true
         zylonScanner.scanBeam.removeAllActions()
@@ -1066,7 +1065,6 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     func justWin(atNode: SCNNode, cause: String) {
         devLog("justWin!")
         gameOver = true
-        removeMarkedSectorObjects()
         zylonScanner.isHidden = true
         zylonScanner.scanBeam.removeAllActions()
         viewMode = .foreView
@@ -1082,17 +1080,17 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     func checkForGameEnd() {
         if !gameOver {
             let stationGrids = galaxyModel.map.filter {$0.sectorType == .starbase}
-        //  let enemyGrids = galaxyModel.map.filter {$0.sectorType == .enemy }
-        if stationGrids.count == 0 {
-            boomAndLose(atNode: ship, cause: "All is lost. Zylon outposts destroyed by Humon invaders")
-        }
+            if stationGrids.count == 0 {
+                boomAndLose(atNode: ship, cause: "All is lost. Zylon outposts destroyed by Humon invaders")
+            }
         
-        if galaxyModel.currentNumberOfOccupiedSectors == 0 && !gameOver {
-            //  endGame("Victory is ours. The Humons have been vanquished")
-            justWin(atNode: ship, cause: "Victory is ours. The Humons have been vanquished")
+            if galaxyModel.currentNumberOfOccupiedSectors == 0 {
+                //  endGame("Victory is ours. The Humons have been vanquished")
+               // boomAndLose(atNode: ship, cause: "Victory is ours. The Humons have been vanquished")
+                justWin(atNode: ship, cause: "Victory is ours. The Humons have been vanquished")
+            }
         }
     }
-        }
 
     func endGame(_ cause: String) {
         print("endGame")
@@ -1384,11 +1382,10 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     func removeMarkedSectorObjects() {
         for object in sectorObjectsToBeRemoved {
-            devLog("Removing sector Object: \(object.description) ")
             object.removeFromParentNode()
         }
         sectorObjectsToBeRemoved.removeAll()
-        checkForGameEnd()
+        //checkForGameEnd()
     }
 
     func removeAllTorps() {
@@ -1405,6 +1402,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         var localNumberOfHumonShotsOnscreen = 0
         enemyShipsInSector.removeAll()
         removeMarkedSectorObjects()
+        checkForGameEnd()
 
         mainGameScene.rootNode.enumerateChildNodes({thisNode, _ in
 
