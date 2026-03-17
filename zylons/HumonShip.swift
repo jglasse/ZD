@@ -8,6 +8,7 @@
 
 import Foundation
 import SceneKit
+import UIKit
 
 enum ShipType: Int {
     case scout
@@ -127,9 +128,28 @@ class HumonShip: SectorObject {
         let droneShape = SCNBox(width: 10, height: 5, length: 5, chamferRadius: 0)
         let dronePhysicsShape = SCNPhysicsShape(geometry: droneShape, options: nil)
         self.addChildNode(humonShip!)
-        if shipType == .destroyer, let ballRot = humonShip?.childNode(withName: "BallRot", recursively: true) {
-            let spin = SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 0, z: CGFloat.pi * 2, duration: 2.0))
-            ballRot.runAction(spin)
+        if shipType == .destroyer {
+            if let ballRot = humonShip?.childNode(withName: "BallRot", recursively: true) {
+                let spin = SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y:0, z:  CGFloat.pi * 2, duration: 3.0))
+                ballRot.runAction(spin)
+            }
+            // Animate the BaseStar emission between green and blue to make the orbs glow
+            if let baseStar = humonShip?.childNode(withName: "BallRot", recursively: true),
+               let originalMaterial = baseStar.geometry?.materials.first {
+                let orbMaterial = originalMaterial.copy() as! SCNMaterial
+                orbMaterial.emission.contents = UIColor.green
+                baseStar.geometry?.materials = [orbMaterial]
+
+                let glowToBlue = SCNAction.customAction(duration: 1.5) { _, elapsed in
+                    let t = CGFloat(elapsed / 1.5)
+                    orbMaterial.emission.contents = UIColor(red: 0, green: 1.0 - t, blue: t, alpha: 1)
+                }
+                let glowToGreen = SCNAction.customAction(duration: 1.5) { _, elapsed in
+                    let t = CGFloat(elapsed / 1.5)
+                    orbMaterial.emission.contents = UIColor(red: 0, green: t, blue: 1.0 - t, alpha: 1)
+                }
+                baseStar.runAction(.repeatForever(.sequence([glowToBlue, glowToGreen])))
+            }
         }
         self.physicsBody = SCNPhysicsBody(type: .kinematic, shape: dronePhysicsShape)
         self.physicsBody?.isAffectedByGravity = false
