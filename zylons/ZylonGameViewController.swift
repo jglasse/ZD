@@ -1108,10 +1108,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
             devLog("rankIndex: \(rankIndex)")
             if rankIndex > 12 { rankIndex = 12 }
             let rank: String =  self.rankArray[rankIndex]
+           
             let message = """
             Zylon Command to all sectors. \(cause)
 
-            Postumous Rank: \(rank)
+            Final Rank: \(rank)
             """
             self.telemetryView.writeMessage(message: message, speed: 0.05)
 
