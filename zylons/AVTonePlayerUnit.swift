@@ -9,7 +9,7 @@
 import Foundation
 import AVFoundation
 
-class AVTonePlayerUnit: AVAudioPlayerNode {
+class AVTonePlayerUnit: AVAudioPlayerNode, @unchecked Sendable {
     let bufferCapacity: AVAudioFrameCount = 512
     let sampleRate: Double = 44_100.0
 
