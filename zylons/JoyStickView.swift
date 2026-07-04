@@ -44,16 +44,16 @@ public final class JoyStickView: UIView {
     /// The end result will be a base image with an opacity of `baseAlpha` * `view.alpha`
     public var baseAlpha: CGFloat {
         get {
-            return baseImageView.alpha
+            return baseImageView?.alpha ?? 1.0
         }
         set {
-            baseImageView.alpha = newValue
+            baseImageView?.alpha = newValue
         }
     }
 
     /// The tintColor to apply to the handle. By default, uses the view's tintColor value. Changing it while joystick
     /// is visible will update the handle image.
-    public var handleTintColor: UIColor! {
+    public var handleTintColor: UIColor = .white {
         didSet { makeHandleImage() }
     }
 
@@ -68,10 +68,10 @@ public final class JoyStickView: UIView {
     private lazy var radius: CGFloat = { return self.bounds.size.width / 2.0 }()
 
     /// The image to use for the base of the joystick
-    private let baseImage = UIImage(named: "JoyStickBase")!
+    private let baseImage = JoyStickView.loadImage(named: "JoyStickBase")
 
     /// The image to use for the joystick handle
-    private let handleImage = UIImage(named: "JoyStickHandle")!
+    private let handleImage = JoyStickView.loadImage(named: "JoyStickHandle")
 
     /// The image to use to show the base of the joystick
     private var baseImageView: UIImageView!
@@ -87,6 +87,16 @@ public final class JoyStickView: UIView {
 
     /// Tap gesture recognizer for double-taps which will reset the joystick position
     private var tapGestureRecognizer: UITapGestureRecognizer!
+
+    private static func loadImage(named name: String) -> UIImage {
+        let bundle = Bundle(for: JoyStickView.self)
+        if let image = UIImage(named: name, in: bundle, compatibleWith: nil) ?? UIImage(named: name) {
+            return image
+        }
+
+        assertionFailure("Missing required joystick image asset named \(name)")
+        return UIImage()
+    }
 
     /**
      Initialize new joystick view using the given frame.
@@ -111,7 +121,7 @@ public final class JoyStickView: UIView {
      */
     private func initialize() {
 
-        handleTintColor = tintColor
+        handleTintColor = tintColor ?? .white
 
         baseImageView = UIImageView(image: baseImage)
         baseImageView.alpha = baseAlpha
@@ -135,18 +145,21 @@ public final class JoyStickView: UIView {
     private func makeHandleImage() {
         guard handleImageView != nil else { return }
         guard let inputImage = CIImage(image: handleImage) else {
-            fatalError("failed to create input CIImage")
+            handleImageView.image = handleImage
+            return
         }
 
         let filterConfig: [String: Any] = [kCIInputIntensityKey: 1.0,
-                                          kCIInputColorKey: CIColor(color: handleTintColor!),
+                                          kCIInputColorKey: CIColor(color: handleTintColor),
                                           kCIInputImageKey: inputImage]
         guard let filter = CIFilter(name: "CIColorMonochrome", parameters: filterConfig) else {
-            fatalError("failed to create CIFilter CIColorMonochrome")
+            handleImageView.image = handleImage
+            return
         }
 
         guard let outputImage = filter.outputImage else {
-            fatalError("failed to obtain output CIImage")
+            handleImageView.image = handleImage
+            return
         }
 
         handleImageView.image = UIImage(ciImage: outputImage)
@@ -213,7 +226,8 @@ public final class JoyStickView: UIView {
      - parameter touch: the UITouch instance describing where the finger/pencil is
      */
     private func updatePosition(touch: UITouch) {
-        updateLocation(location: touch.location(in: superview!))
+        guard let superview = superview else { return }
+        updateLocation(location: touch.location(in: superview))
     }
 
     /**
