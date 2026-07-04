@@ -63,7 +63,7 @@ class ZylonStation: SectorObject {
         self.worldPosition = SCNVector3Make(0, 0, -200)
         self.scale = SCNVector3Make(1, 1, 1)
 
-        let action = SCNAction.rotateBy(x: 0, y: CGFloat(GLKMathDegreesToRadians(360)), z: 0, duration: 90)
+        let action = SCNAction.rotateBy(x: 0, y: CGFloat.pi * 2, z: 0, duration: 90)
         let forever = SCNAction.repeatForever(action)
         zylonStation?.runAction(forever)
         print("zylon Station Created")

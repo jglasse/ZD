@@ -194,7 +194,7 @@ class MainMenuViewController: UIViewController, AVAudioPlayerDelegate {
         // cameraNode.rotation = SCNVector4
         cameraNode.camera?.focalLength = 28.0
 
-        let action = SCNAction.rotateBy(x: 0, y: 0, z: CGFloat(GLKMathDegreesToRadians(360)), duration: 56)
+        let action = SCNAction.rotateBy(x: 0, y: 0, z: CGFloat.pi * 2, duration: 56)
         let forever = SCNAction.repeatForever(action)
         rotationNode.runAction(forever)
         mapScnView.prepare([galaxyScene], completionHandler: nil)

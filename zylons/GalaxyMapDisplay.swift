@@ -114,7 +114,7 @@ class GalacticMapDisplay {
         let icon = SCNNode(geometry: newPlane)
         icon.rotation = SCNVector4(1, 0, 0, Float.pi/2)
         node.addChildNode(icon)
-        let action = SCNAction.rotateBy(x: 0, y: 0, z: CGFloat(GLKMathDegreesToRadians(360)), duration: 1)
+        let action = SCNAction.rotateBy(x: 0, y: 0, z: CGFloat.pi * 2, duration: 1)
         let forever = SCNAction.repeatForever(action)
         icon.runAction(forever)
     }
