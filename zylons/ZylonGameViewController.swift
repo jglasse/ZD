@@ -911,6 +911,24 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         galacticDisplay.rotationNode.scale = SCNVector3(newZoom, newZoom, newZoom)
     }
 
+    func rotateGalacticMapWithArrowKeys() {
+        guard !heldKeys.isEmpty else { return }
+        let kStrength: Float = 1.0 / divider
+        var newAngleZ = currentMapAngleZ
+        var newAngleX = currentMapAngleX
+
+        if heldKeys.contains(.keyboardLeftArrow)  { newAngleZ -= kStrength }
+        if heldKeys.contains(.keyboardRightArrow) { newAngleZ += kStrength }
+        if heldKeys.contains(.keyboardUpArrow)    { newAngleX += kStrength }
+        if heldKeys.contains(.keyboardDownArrow)  { newAngleX -= kStrength }
+        if newAngleX > 0.2 {newAngleX = 0.2} else if newAngleX < -0.4 {newAngleX = -0.4}
+
+        internalRotationNode.eulerAngles.z = newAngleZ
+        rotationNode.eulerAngles.x = newAngleX
+        currentMapAngleZ = newAngleZ
+        currentMapAngleX = newAngleX
+    }
+
     // MARK: - Ship Functions
 
     func setSpeed(_ newSpeed: Int) {
@@ -1231,6 +1249,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     }
 
     func turnShip() {
+        if viewMode == .galacticMap {
+            rotateGalacticMapWithArrowKeys()
+            return
+        }
+
         if let controllerHardware = mainController {
             let yT = controllerHardware.leftThumbstick.xAxis.value/40
             let xT = controllerHardware.leftThumbstick.yAxis.value/40
@@ -1673,8 +1696,14 @@ extension ZylonGameViewController {
             switch key.keyCode {
             case .keyboardUpArrow, .keyboardDownArrow, .keyboardLeftArrow, .keyboardRightArrow:
                 heldKeys.insert(key.keyCode)
-            case .keyboardM:
+            case .keyboardG:
                 toggleGalacticMap(self)
+            case .keyboardM:
+                if viewMode == .galacticMap {
+                    toggleGalacticMap(self)
+                } else {
+                    super.pressesBegan(presses, with: event)
+                }
             case .keyboardF:
                 if viewMode == .galacticMap {
                     toggleGalacticMap(self)
@@ -1691,6 +1720,8 @@ extension ZylonGameViewController {
                 toggleTacticalDisplay(self)
             case .keyboardP:
                 pauseGame(UIButton())
+            case .keyboardSpacebar:
+                fireTorpedo(UIButton())
             case .keyboard1:
                 if viewMode == .galacticMap { alpha(self) } else { super.pressesBegan(presses, with: event) }
             case .keyboard2:
@@ -1699,6 +1730,8 @@ extension ZylonGameViewController {
                 if viewMode == .galacticMap { gamma(self) } else { super.pressesBegan(presses, with: event) }
             case .keyboard4:
                 if viewMode == .galacticMap { delta(self) } else { super.pressesBegan(presses, with: event) }
+            case .keyboard0:
+                if viewMode == .galacticMap { allQuads(self) } else { super.pressesBegan(presses, with: event) }
             case .keyboardD:
                 if viewMode == .galacticMap { DToggle(UIButton()) } else { super.pressesBegan(presses, with: event) }
             default:
