@@ -58,6 +58,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     var rightShoulderJustPressed = false
     var leftShoulderJustPressed = false
 
+    // MARK: - Keyboard (Mac / Designed for iPad)
+    var heldKeys: Set<UIKeyboardHIDUsage> = []
+
     // MARK: - Scenes, Views and Nodes
     var mainGameScene = SCNScene()
     var scnView: SCNView!
@@ -626,8 +629,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         self.restartButton.isHidden = true
         self.view.alpha = 0
     }
+    override var canBecomeFirstResponder: Bool { return true }
+
     override func viewDidAppear(_ animated: Bool) {
         UIView.animate(withDuration: 1.0, animations: {self.view.alpha = 1})
+        becomeFirstResponder()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -1231,6 +1237,17 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
             self.rotate(self.sectorObjectsNode, around: Constants.xAxis, by: CGFloat(xT))
             self.rotate(self.sectorObjectsNode, around: Constants.yAxis, by: CGFloat(yT))
 
+        } else if !heldKeys.isEmpty && joystickControl.displacement == 0 {
+            let kStrength: Float = 1.0 / divider
+            var kx: Float = 0
+            var ky: Float = 0
+            if heldKeys.contains(.keyboardUpArrow)    { kx += kStrength }
+            if heldKeys.contains(.keyboardDownArrow)  { kx -= kStrength }
+            if heldKeys.contains(.keyboardRightArrow) { ky += kStrength }
+            if heldKeys.contains(.keyboardLeftArrow)  { ky -= kStrength }
+            self.rotate(self.sectorObjectsNode, around: Constants.xAxis, by: CGFloat(kx))
+            self.rotate(self.sectorObjectsNode, around: Constants.yAxis, by: CGFloat(ky))
+
         } else {
             if self.gameSettings.invertedAxis {
                 let invertedXThrust: Float =  Float(cos(self.joystickControl.angle.degreesToRadians + 3.1415) * self.joystickControl.displacement)/divider
@@ -1644,5 +1661,65 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     }
     override var shouldAutorotate: Bool {
         return false
+    }
+}
+
+// MARK: - Mac Keyboard Controls
+extension ZylonGameViewController {
+
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses {
+            guard let key = press.key else { continue }
+            switch key.keyCode {
+            case .keyboardUpArrow, .keyboardDownArrow, .keyboardLeftArrow, .keyboardRightArrow:
+                heldKeys.insert(key.keyCode)
+            case .keyboardM:
+                toggleGalacticMap(self)
+            case .keyboardF:
+                if viewMode == .galacticMap {
+                    toggleGalacticMap(self)
+                } else {
+                    toggleView(UIButton())
+                }
+            case .keyboardA:
+                toggleView(UIButton())
+            case .keyboardW:
+                gridWarp(UIButton())
+            case .keyboardS:
+                toggleShields(UIButton())
+            case .keyboardT:
+                toggleTacticalDisplay(self)
+            case .keyboardP:
+                pauseGame(UIButton())
+            case .keyboard1:
+                if viewMode == .galacticMap { alpha(self) } else { super.pressesBegan(presses, with: event) }
+            case .keyboard2:
+                if viewMode == .galacticMap { beta(self) } else { super.pressesBegan(presses, with: event) }
+            case .keyboard3:
+                if viewMode == .galacticMap { gamma(self) } else { super.pressesBegan(presses, with: event) }
+            case .keyboard4:
+                if viewMode == .galacticMap { delta(self) } else { super.pressesBegan(presses, with: event) }
+            case .keyboardD:
+                if viewMode == .galacticMap { DToggle(UIButton()) } else { super.pressesBegan(presses, with: event) }
+            default:
+                super.pressesBegan(presses, with: event)
+            }
+        }
+    }
+
+    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses {
+            guard let key = press.key else { continue }
+            heldKeys.remove(key.keyCode)
+        }
+        super.pressesEnded(presses, with: event)
+    }
+
+    override func pressesCancelled(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        for press in presses {
+            guard let key = press.key else { continue }
+            heldKeys.remove(key.keyCode)
+        }
+        super.pressesCancelled(presses, with: event)
     }
 }
