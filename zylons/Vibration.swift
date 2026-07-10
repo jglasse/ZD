@@ -25,6 +25,9 @@ enum Vibration {
       case oldSchool
 
       public func vibrate() {
+          #if os(tvOS)
+          return // no haptics/vibration hardware on tvOS
+          #else
           switch self {
           case .error:
               UINotificationFeedbackGenerator().notificationOccurred(.error)
@@ -51,5 +54,6 @@ enum Vibration {
           case .oldSchool:
               AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
           }
+          #endif
       }
   }

@@ -86,8 +86,10 @@ extension ZylonGameViewController {
     }
 
         // MARK: - MFI GAME CONTROLLER CODE
+        // Mapping: leftTrigger=shields, rightTrigger/buttonA=fire, leftShoulder=map toggle,
+        // rightShoulder=warp, buttonB=fore/aft toggle, buttonX=tactical, buttonY=pause.
 
-        private func processGameControllerInput() {
+        func processGameControllerInput() {
             guard let profile: GCExtendedGamepad = self.mainController else {
                 return
             }
@@ -105,7 +107,7 @@ extension ZylonGameViewController {
                 if gamepad.rightTrigger == element && gamepad.rightTrigger.isPressed && !self.aButtonJustPressed {
                     self.aButtonJustPressed = true
                     message = "Right Trigger - Fire"
-                    self.fireTorp()
+                    self.fireTorpedo(UIButton())
                 }
 
                 if gamepad.rightTrigger == element && !gamepad.rightTrigger.isPressed {
@@ -126,14 +128,21 @@ extension ZylonGameViewController {
                 }
 
                 // right shoulder button
-                if gamepad.rightShoulder == element && gamepad.rightShoulder.isPressed {
-                    message = "Right Shoulder Button"
+                if gamepad.rightShoulder == element && gamepad.rightShoulder.isPressed && !self.rightShoulderJustPressed {
+                    self.rightShoulderJustPressed = true
+                    message = "Right Shoulder Button - Warp"
+                    self.gridWarp(UIButton())
+                }
+
+                // Right Shoulder button UP
+                if gamepad.rightShoulder == element && !gamepad.rightShoulder.isPressed {
+                    self.rightShoulderJustPressed = false
                 }
 
                 // A button
                 if gamepad.buttonA == element && gamepad.buttonA.isPressed  && !self.aButtonJustPressed {
                     message = "A Button - FIRE"
-                    self.fireTorp()
+                    self.fireTorpedo(UIButton())
                     self.aButtonJustPressed = true
 
                 }
@@ -157,13 +166,23 @@ extension ZylonGameViewController {
                 }
 
                 // X button
-                if gamepad.buttonX == element && gamepad.buttonX.isPressed {
-                    message = "X Button"
+                if gamepad.buttonX == element && gamepad.buttonX.isPressed && !self.xButtonJustPressed {
+                    self.xButtonJustPressed = true
+                    message = "X Button - Tactical"
+                    self.toggleTacticalDisplay(self)
+                }
+                if gamepad.buttonX == element && !gamepad.buttonX.isPressed {
+                    self.xButtonJustPressed = false
                 }
 
                 // Y button
-                if gamepad.buttonY == element && gamepad.buttonY.isPressed {
-                    message = "Y Button"
+                if gamepad.buttonY == element && gamepad.buttonY.isPressed && !self.yButtonJustPressed {
+                    self.yButtonJustPressed = true
+                    message = "Y Button - Pause"
+                    self.pauseGame(UIButton())
+                }
+                if gamepad.buttonY == element && !gamepad.buttonY.isPressed {
+                    self.yButtonJustPressed = false
                 }
 
                 // d-pad
@@ -179,6 +198,25 @@ extension ZylonGameViewController {
                     }
                     if gamepad.dpad.right.isPressed {
                         message = "D-Pad Right"
+                    }
+
+                    // In the galactic map, d-pad left/right scrubs the target sector
+                    // (replaces the touch-only galacticSlider on platforms without one, e.g. tvOS).
+                    if self.viewMode == .galacticMap {
+                        if gamepad.dpad.left.isPressed && !self.dpadLeftJustPressed {
+                            self.dpadLeftJustPressed = true
+                            self.setTargetSector(self.ship.targetSectorNumber - 1)
+                        }
+                        if !gamepad.dpad.left.isPressed {
+                            self.dpadLeftJustPressed = false
+                        }
+                        if gamepad.dpad.right.isPressed && !self.dpadRightJustPressed {
+                            self.dpadRightJustPressed = true
+                            self.setTargetSector(self.ship.targetSectorNumber + 1)
+                        }
+                        if !gamepad.dpad.right.isPressed {
+                            self.dpadRightJustPressed = false
+                        }
                     }
                 }
 
@@ -225,7 +263,7 @@ extension ZylonGameViewController {
         }
 
         @objc func controllerWasConnected(_ notification: Notification) {
-            if let controller: GCExtendedGamepad = notification.object as? GCExtendedGamepad {
+            if let controller: GCExtendedGamepad = (notification.object as? GCController)?.extendedGamepad {
                 let status = "Controller: \(String(describing: controller.description)) is connected"
             print(status)
             self.joystickControl.isHidden = true

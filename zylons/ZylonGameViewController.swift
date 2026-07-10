@@ -44,9 +44,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     // MARK: - Generic iOS
 
+    #if !os(tvOS)
     override var prefersStatusBarHidden: Bool {
         return true
     }
+    #endif
     // TODO: make gamestate a single codable object
 
     // MARK: - Mfi Game Controller vars
@@ -57,6 +59,10 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     var rightTriggerJustPressed = false
     var rightShoulderJustPressed = false
     var leftShoulderJustPressed = false
+    var xButtonJustPressed = false
+    var yButtonJustPressed = false
+    var dpadLeftJustPressed = false
+    var dpadRightJustPressed = false
 
     // MARK: - Keyboard (Mac / Designed for iPad)
     var heldKeys: Set<UIKeyboardHIDUsage> = []
@@ -85,7 +91,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
     var deltaQuadrant: SCNNode { return (galacticDisplay.map.rootNode.childNode(withName: "DELTA", recursively: true))! }
     var rotationNode: SCNNode { return  (galacticDisplay.map.rootNode.childNode(withName: "rotateNode", recursively: true))! }
     var internalRotationNode: SCNNode { return  (galacticDisplay.map.rootNode.childNode(withName: "internalRot", recursively: true))! }
+    #if !os(tvOS)
     var galacticSlider = UISlider()
+    #endif
+    var targetSectorMin = 0
+    var targetSectorMax = 127
 
     var currentRankIndex: Int {return 0}
 
@@ -265,15 +275,20 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     }
 
+    #if !os(tvOS)
     @IBAction func galacticSlide(_ sender: UISlider) {
-        self.ship.targetSectorNumber = Int(sender.value)
+        setTargetSector(Int(sender.value))
+    }
+    #endif
+
+    func setTargetSector(_ number: Int) {
+        self.ship.targetSectorNumber = min(max(number, targetSectorMin), targetSectorMax)
         galacticDisplay.setNewTargetGrid(number: ship.targetSectorNumber, color: UIColor.red)
         galacticDisplay.setNewShipCurrentGrid(number: ship.currentSectorNumber, color: UIColor.white)
         classicMap.setNewTargetGrid(number: ship.targetSectorNumber, color: UIColor.red)
 
         self.shipSectorLabel.text = "Ship Sector: \(self.shipCurrrentSectorGrid.quadrant) \(self.shipCurrrentSectorGrid.quadrantNumber)"
         self.targetSectorLabel.text = "Target Sector: \(self.targetSectorGrid.quadrant) \(self.targetSectorGrid.quadrantNumber)"
-
     }
 
  // Galactic Stack
@@ -374,7 +389,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         if self.viewMode == .aftView { fireAftTorp() }}
     }
 
+	#if !os(tvOS)
 	@IBOutlet weak var stepperSpeed: UIStepper!
+	#endif
 
     fileprivate func populateSector() {
         switch self.shipCurrrentSectorGrid.sectorType {
@@ -523,11 +540,25 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     }
 
+    #if !os(tvOS)
     @IBAction func speedChanged(_ sender: UIStepper) {
         computerBeepSound("beep")
         let targetSpeed = sender.value
         setSpeed(Int(targetSpeed))
     }
+    #endif
+
+    #if os(tvOS)
+    @IBAction func speedUp(_ sender: UIButton) {
+        computerBeepSound("beep")
+        setSpeed(min(ship.currentSpeed + 1, 9))
+    }
+
+    @IBAction func speedDown(_ sender: UIButton) {
+        computerBeepSound("beep")
+        setSpeed(max(ship.currentSpeed - 1, 0))
+    }
+    #endif
 
     @IBAction func alpha(_ sender: Any) {
         computerBeepSound("beep")
@@ -538,8 +569,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
             gammaQuadrant.opacity = Constants.fadedMapTransparency
             deltaQuadrant.opacity = Constants.fadedMapTransparency
             kohai.speak("AlphaSector")
+            #if !os(tvOS)
             galacticSlider.minimumValue = 0
             galacticSlider.maximumValue = 31
+            #endif
+            targetSectorMin = 0
+            targetSectorMax = 31
             classicMap.setAvailable(min: 0, max: 31)
 
             ship.targetSectorNumber = 16
@@ -557,8 +592,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         gammaQuadrant.opacity = Constants.fadedMapTransparency
         deltaQuadrant.opacity = Constants.fadedMapTransparency
         kohai.speak(("BetaSector"))
+        #if !os(tvOS)
         galacticSlider.minimumValue = 32
         galacticSlider.maximumValue = 63
+        #endif
+        targetSectorMin = 32
+        targetSectorMax = 63
         classicMap.setAvailable(min: 32, max: 63)
 
         ship.targetSectorNumber = 48
@@ -577,8 +616,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         gammaQuadrant.opacity = 1.0
         deltaQuadrant.opacity = Constants.fadedMapTransparency
         kohai.speak("GammaSector")
+        #if !os(tvOS)
         galacticSlider.minimumValue = 64
         galacticSlider.maximumValue = 95
+        #endif
+        targetSectorMin = 64
+        targetSectorMax = 95
         classicMap.setAvailable(min: 64, max: 95)
 
         ship.targetSectorNumber = 80
@@ -596,8 +639,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         gammaQuadrant.opacity = Constants.fadedMapTransparency
         deltaQuadrant.opacity = 1.0
         kohai.speak("DeltaSector")
+        #if !os(tvOS)
         galacticSlider.minimumValue = 96
         galacticSlider.maximumValue = 127
+        #endif
+        targetSectorMin = 96
+        targetSectorMax = 127
         classicMap.setAvailable(min: 96, max: 127)
 
         ship.targetSectorNumber = 112
@@ -614,8 +661,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         betaQuadrant.opacity = 1.0
         gammaQuadrant.opacity = 1.0
         deltaQuadrant.opacity = 1.0
+        #if !os(tvOS)
         galacticSlider.minimumValue = 0
         galacticSlider.maximumValue = 127
+        #endif
+        targetSectorMin = 0
+        targetSectorMax = 127
         classicMap.setAvailable(min: 0, max: 127)
         classicMap.updateDisplay(galaxyModel: galaxyModel, shipSector: ship.currentSectorNumber, targetSector: ship.targetSectorNumber)
 
@@ -625,7 +676,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     override func viewWillAppear(_ animated: Bool) {
         self.galaxyModel = GalaxyMapModel(difficulty: difficultyScalar)
+        #if !os(tvOS)
         self.galacticSlider.isHidden = true
+        #endif
         self.restartButton.isHidden = true
         self.view.alpha = 0
     }
@@ -645,6 +698,12 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
                                                selector: #selector(self.controllerWasDisconnected),
                                                name: NSNotification.Name.GCControllerDidDisconnect,
                                                object: nil)
+
+        if let existing = GCController.controllers().first?.extendedGamepad {
+            mainController = existing
+            processGameControllerInput()
+            self.joystickControl.isHidden = true
+        }
 
       myMCController.setup()
       myMCController.myCommandDelegate = self
@@ -668,6 +727,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         joystickControl.baseAlpha = 0.3
         joystickControl.alpha = 0.2
 
+        #if !os(tvOS)
         // rotate slider and constrain it to the container view
         galacticSlider.minimumValue = 0
         galacticSlider.maximumValue = 127
@@ -688,6 +748,7 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
        // self.galacticSlider.heightAnchor.constraint(equalTo: self.sliderContainerView.widthAnchor)
         NSLayoutConstraint.activate(constraints)
+        #endif
     }
 
     func setupScene() {
@@ -847,11 +908,13 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
             self.mapScnView.allowsCameraControl = false
             })
         let myPanRecognizer = UIPanGestureRecognizer(target: self, action: #selector(mapPan(_:)))
-        let myZoomRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(mapZoom(_:)))
         let myTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(mapTap(_:)))
         mapScnView.addGestureRecognizer(myPanRecognizer)
-        mapScnView.addGestureRecognizer(myZoomRecognizer)
         mapScnView.addGestureRecognizer(myTapRecognizer)
+        #if !os(tvOS)
+        let myZoomRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(mapZoom(_:)))
+        mapScnView.addGestureRecognizer(myZoomRecognizer)
+        #endif
 
     }
 
@@ -905,11 +968,13 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     }
 
+    #if !os(tvOS)
     @objc func mapZoom(_ gesture: UIPinchGestureRecognizer) {
         var newZoom = gesture.scale
         if newZoom > 1.2 {newZoom = 1.2} else if newZoom < 0.75 {newZoom = 0.75}
         galacticDisplay.rotationNode.scale = SCNVector3(newZoom, newZoom, newZoom)
     }
+    #endif
 
     func rotateGalacticMapWithArrowKeys() {
         guard !heldKeys.isEmpty else { return }
@@ -929,6 +994,18 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         currentMapAngleX = newAngleX
     }
 
+    func rotateGalacticMapWithController(_ pad: GCExtendedGamepad) {
+        let kStrength: Float = 1.0 / divider
+        var newAngleZ = currentMapAngleZ + pad.leftThumbstick.xAxis.value * kStrength
+        var newAngleX = currentMapAngleX + pad.leftThumbstick.yAxis.value * kStrength
+        if newAngleX > 0.2 {newAngleX = 0.2} else if newAngleX < -0.4 {newAngleX = -0.4}
+
+        internalRotationNode.eulerAngles.z = newAngleZ
+        rotationNode.eulerAngles.x = newAngleX
+        currentMapAngleZ = newAngleZ
+        currentMapAngleX = newAngleX
+    }
+
     // MARK: - Ship Functions
 
     func setSpeed(_ newSpeed: Int) {
@@ -939,7 +1016,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         DispatchQueue.main.async {
 
 		self.currentSpeedDisplay.text = "\(self.ship.currentSpeed)"
+            #if !os(tvOS)
             self.stepperSpeed.value = Double(newSpeed)
+            #endif
 
         }
         SCNTransaction.commit()
@@ -1232,9 +1311,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
         SCNTransaction.begin()
      //   SCNTransaction.animationDuration = 1.5
 			self.setSpeed(10)
+            #if !os(tvOS)
             DispatchQueue.main.async {
 			self.stepperSpeed.value = 9
             }
+            #endif
 
         sectorObjectsNode.enumerateChildNodes({thisNode, _ in
             // remove all ships and torpedoes, and hide the space station
@@ -1250,7 +1331,11 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     func turnShip() {
         if viewMode == .galacticMap {
-            rotateGalacticMapWithArrowKeys()
+            if let pad = mainController {
+                rotateGalacticMapWithController(pad)
+            } else {
+                rotateGalacticMapWithArrowKeys()
+            }
             return
         }
 
@@ -1617,7 +1702,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
                 self.speedStack.isHidden = false
                 self.joystickControl.isHidden = false
                 self.mapScnView.isHidden = true
+                #if !os(tvOS)
                 self.galacticSlider.isHidden = true
+                #endif
                 self.scnView.isHidden = false
                 self.galacticStack.isHidden = true
                 self.commandStack.isHidden = false
@@ -1635,7 +1722,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
                 self.speedStack.isHidden = false
                 self.joystickControl.isHidden = false
                 self.mapScnView.isHidden = true
+                #if !os(tvOS)
                 self.galacticSlider.isHidden = true
+                #endif
                 self.scnView.isHidden = false
                 self.galacticStack.isHidden = true
                 self.commandStack.isHidden = false
@@ -1653,7 +1742,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
                         x.isHidden = !self.galacticDisplay.threeDMode
                     }
                     self.classicMap.isHidden = self.galacticDisplay.threeDMode
+                    #if !os(tvOS)
                     self.galacticSlider.isHidden = false
+                    #endif
                     self.scnView.isHidden = true
                     self.galacticStack.isHidden = false
                     self.speedStack.isHidden = true
@@ -1668,7 +1759,9 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
             self.tacticalDisplay.isHidden = true
             self.joystickControl.isHidden = true
             self.mapScnView.isHidden = true
+            #if !os(tvOS)
             self.galacticSlider.isHidden = true
+            #endif
             self.galacticStack.isHidden = true
             self.speedStack.isHidden = true
             self.mapButton.isHidden = true
@@ -1679,12 +1772,14 @@ class ZylonGameViewController: UIViewController, SCNPhysicsContactDelegate, SCNS
 
     // MARK: - Generic iOS Setup
 
+    #if !os(tvOS)
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
     override var shouldAutorotate: Bool {
         return false
     }
+    #endif
 }
 
 // MARK: - Mac Keyboard Controls

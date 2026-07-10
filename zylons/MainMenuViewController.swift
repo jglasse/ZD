@@ -34,9 +34,11 @@ class MainMenuViewController: UIViewController, AVAudioPlayerDelegate {
     var creditTimer: Timer?
     var beepsound: AVAudioPlayer!
 
+    #if !os(tvOS)
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
+    #endif
 
     // MARK: - IBOutlets
     @IBOutlet weak var prologueToggleSwitch: UIButton!

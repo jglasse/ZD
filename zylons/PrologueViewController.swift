@@ -35,9 +35,11 @@ class PrologueViewController: UIViewController, AVAudioPlayerDelegate, UIViewCon
     }
     // MARK: - Vars
 
+    #if !os(tvOS)
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
     }
+    #endif
     var prologueViewed = false
     var onPrologue = true
     let writeInterval = 0.037
